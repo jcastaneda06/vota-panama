@@ -179,7 +179,9 @@ const Home: FC = () => {
                 <YAxis tick={{ fontSize: 12 }} />
                 <Tooltip content={<CustomTooltip />} />
                 <Bar dataKey="votes" fill="#8884d8">
-                  <Cell fill="#2AB3B0" />
+                  {candidatesQuery.data?.map((_, index) => (
+                    <Cell key={index} fill="#2AB3B0" />
+                  )) || []}
                 </Bar>
               </BarChart>
             </ResponsiveContainer>

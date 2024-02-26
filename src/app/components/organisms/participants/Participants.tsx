@@ -1,14 +1,16 @@
 import { Avatar, Col, Modal, Row, Tooltip } from "antd";
-import { FC, Fragment } from "react";
+import { FC } from "react";
 import AvatarContainer from "../../atoms/avatarContainer/avatar-container";
 import { Candidate } from "@/app/types/Candidate";
 import { ExclamationCircleOutlined, OpenAIOutlined } from "@ant-design/icons";
 
 type ParticipantsProps = {
   candidates: Candidate[];
+  // eslint-disable-next-line no-unused-vars
   handleModal: (id: string) => void;
   handleVote: () => void;
   isModalOpen: boolean;
+  // eslint-disable-next-line no-unused-vars
   setIsModalOpen: (value: boolean) => void;
 };
 

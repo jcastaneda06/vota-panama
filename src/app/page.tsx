@@ -1,113 +1,119 @@
-import Image from "next/image";
+"use client";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import { Avatar, Col, Modal, Row, Spin, Tooltip, message } from "antd";
+import { FC, useState } from "react";
+import { Candidate } from "./types/Candidate";
+import AvatarContainer from "./components/atoms/avatarContainer/avatar-container";
+import { ExclamationCircleOutlined, OpenAIOutlined } from "@ant-design/icons";
+import candidateEndpoints from "./services/apiEndpoints/candidates";
+import { MongoUpdateOneResponse } from "@/lib/collections/collections";
+import { Bar } from "react-chartjs-2";
+import { UpdateCandidateDto } from "./types/Dto/UpdateCandidateDto";
+// @ts-ignore
+import getBrowserFingerprint from "get-browser-fingerprint";
 
-export default function Home() {
+const Home: FC = () => {
+  const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
+  const [selectedCandidate, setSelectedCandidate] = useState<string | null>(
+    null
+  );
+  const [messageApi, contextHolder] = message.useMessage();
+  const { getCandidates, updateCandidate } = candidateEndpoints();
+
+  const handleModal = (id: string) => {
+    setSelectedCandidate(id);
+    setIsModalOpen(true);
+  };
+
+  const candidatesQuery = useQuery<Candidate[]>({
+    queryKey: ["candidates"],
+    queryFn: async () => getCandidates(),
+  });
+
+  const candidatesMutation = useMutation({
+    mutationFn: async (payload: UpdateCandidateDto) =>
+      await updateCandidate(payload),
+  });
+
+  const handleVote = async () => {
+    if (!selectedCandidate) return;
+
+    const payload = {
+      _id: selectedCandidate,
+      fingerprint: getBrowserFingerprint(),
+    } satisfies UpdateCandidateDto;
+
+    const response: MongoUpdateOneResponse =
+      await candidatesMutation.mutateAsync(payload);
+
+    if (response.result) {
+      messageApi.open({
+        type: "success",
+        content: "Voto registrado exitosamente",
+        duration: 2.5,
+      });
+      setIsModalOpen(false);
+    } else {
+      messageApi.open({
+        type: "error",
+        content: "Usted ya ha votado",
+        duration: 2.5,
+      });
+      setIsModalOpen(false);
+    }
+  };
+
+  if (candidatesQuery.isLoading) return <Spin fullscreen size="large" />;
+
   return (
-    <main className="flex min-h-screen flex-col items-center justify-between p-24">
-      <div className="z-10 max-w-5xl w-full items-center justify-between font-mono text-sm lg:flex">
-        <p className="fixed left-0 top-0 flex w-full justify-center border-b border-gray-300 bg-gradient-to-b from-zinc-200 pb-6 pt-8 backdrop-blur-2xl dark:border-neutral-800 dark:bg-zinc-800/30 dark:from-inherit lg:static lg:w-auto  lg:rounded-xl lg:border lg:bg-gray-200 lg:p-4 lg:dark:bg-zinc-800/30">
-          Get started by editing&nbsp;
-          <code className="font-mono font-bold">src/app/page.tsx</code>
-        </p>
-        <div className="fixed bottom-0 left-0 flex h-48 w-full items-end justify-center bg-gradient-to-t from-white via-white dark:from-black dark:via-black lg:static lg:h-auto lg:w-auto lg:bg-none">
-          <a
-            className="pointer-events-none flex place-items-center gap-2 p-8 lg:pointer-events-auto lg:p-0"
-            href="https://vercel.com?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            By{" "}
-            <Image
-              src="/vercel.svg"
-              alt="Vercel Logo"
-              className="dark:invert"
-              width={100}
-              height={24}
-              priority
-            />
-          </a>
+    <main className="flex min-h-screen flex-col items-center gap-4 p-4">
+      {contextHolder}
+      <h1 className=" text-sky-900 font-bold text-xl text-center">
+        🇵🇦 Si las elecciones fueran hoy, ¿por quién votaría?
+      </h1>
+      <h2>Toque o haga click sobre su candidato de preferencia</h2>
+      <Row gutter={16} className="text-center">
+        {candidatesQuery.data?.map((candidate: Candidate) => (
+          <Col key={candidate._id} span={6} className="mb-4">
+            <AvatarContainer onClick={() => handleModal(candidate._id)}>
+              <Avatar src={candidate.src} size={64} />
+            </AvatarContainer>
+            <p className="text-sm">{candidate.name}</p>
+          </Col>
+        ))}
+      </Row>
+      <Tooltip title="Texto generado por Inteligencia Artificial" arrow>
+        <div className="flex align-top justify-start gap-2">
+          <OpenAIOutlined style={{ height: 16 }} />
+          <div>
+            <p className="text-sm">
+              Votar por un candidato nuevo ofrece la posibilidad de innovación y
+              cambio frente a la corrupción y los vicios del sistema
+              establecido.
+            </p>
+          </div>
         </div>
-      </div>
-
-      <div className="relative flex place-items-center before:absolute before:h-[300px] before:w-full sm:before:w-[480px] before:-translate-x-1/2 before:rounded-full before:bg-gradient-radial before:from-white before:to-transparent before:blur-2xl before:content-[''] after:absolute after:-z-20 after:h-[180px] after:w-full sm:after:w-[240px] after:translate-x-1/3 after:bg-gradient-conic after:from-sky-200 after:via-blue-200 after:blur-2xl after:content-[''] before:dark:bg-gradient-to-br before:dark:from-transparent before:dark:to-blue-700 before:dark:opacity-10 after:dark:from-sky-900 after:dark:via-[#0141ff] after:dark:opacity-40 before:lg:h-[360px] z-[-1]">
-        <Image
-          className="relative dark:drop-shadow-[0_0_0.3rem_#ffffff70] dark:invert"
-          src="/next.svg"
-          alt="Next.js Logo"
-          width={180}
-          height={37}
-          priority
-        />
-      </div>
-
-      <div className="mb-32 grid text-center lg:max-w-5xl lg:w-full lg:mb-0 lg:grid-cols-4 lg:text-left">
-        <a
-          href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className={`mb-3 text-2xl font-semibold`}>
-            Docs{" "}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className={`m-0 max-w-[30ch] text-sm opacity-50`}>
-            Find in-depth information about Next.js features and API.
-          </p>
-        </a>
-
-        <a
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className={`mb-3 text-2xl font-semibold`}>
-            Learn{" "}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className={`m-0 max-w-[30ch] text-sm opacity-50`}>
-            Learn about Next.js in an interactive course with&nbsp;quizzes!
-          </p>
-        </a>
-
-        <a
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className={`mb-3 text-2xl font-semibold`}>
-            Templates{" "}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className={`m-0 max-w-[30ch] text-sm opacity-50`}>
-            Explore starter templates for Next.js.
-          </p>
-        </a>
-
-        <a
-          href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className={`mb-3 text-2xl font-semibold`}>
-            Deploy{" "}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className={`m-0 max-w-[30ch] text-sm opacity-50 text-balance`}>
-            Instantly deploy your Next.js site to a shareable URL with Vercel.
-          </p>
-        </a>
-      </div>
+      </Tooltip>
+      <Modal
+        title={
+          <div>
+            <ExclamationCircleOutlined /> Confirmacion
+          </div>
+        }
+        open={isModalOpen}
+        onOk={() => handleVote()}
+        onCancel={() => setIsModalOpen(false)}
+        okType="default"
+        okText="Votar"
+        cancelText="Cancelar"
+      >
+        <p>
+          Al votar por un candidato no podra volver a relaizar su voto. ¿Está
+          seguro de que quiere continuar?
+        </p>
+      </Modal>
     </main>
   );
-}
+};
+
+export default Home;

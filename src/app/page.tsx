@@ -8,7 +8,6 @@ import { MongoUpdateOneResponse } from "@/lib/collections/collections";
 import { UpdateCandidateDto } from "./types/Dto/UpdateCandidateDto";
 // @ts-ignore
 import getBrowserFingerprint from "get-browser-fingerprint";
-import { getAverageColor } from "./helpers/getAverageColor";
 import {
   Bar,
   BarChart,
@@ -180,12 +179,7 @@ const Home: FC = () => {
                 <YAxis tick={{ fontSize: 12 }} />
                 <Tooltip content={<CustomTooltip />} />
                 <Bar dataKey="votes" fill="#8884d8">
-                  {candidatesQuery.data?.map(
-                    (c) =>
-                      getAverageColor(c.src) && (
-                        <Cell key={c._id} fill={"#2AB3B0"} />
-                      )
-                  ) || []}
+                  <Cell fill="#2AB3B0" />
                 </Bar>
               </BarChart>
             </ResponsiveContainer>

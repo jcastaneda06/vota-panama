@@ -138,7 +138,8 @@ const Home: FC = () => {
     return null;
   };
 
-  if (candidatesQuery.isLoading) return <Spin fullscreen size="large" />;
+  if (candidatesQuery.isLoading || fingerprintQuery.isLoading)
+    return <Spin fullscreen size="large" />;
 
   return (
     <main className="flex md:m-auto p-4 md:max-w-[800px] md:justify-center">

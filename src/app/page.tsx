@@ -65,6 +65,7 @@ const Home: FC = () => {
   const [fingerprint, setFingerprint] = useState<number>(0);
   const [ipAddress, setIpAddress] = useState<string>("");
   const [reducedVotes, setReducedVotes] = useState<number>(0);
+  const [polling, setPolling] = useState<boolean>(false);
 
   const { getCandidates, updateCandidate } = candidateEndpoints();
   const { getFingerprint } = fingerprintEndpoints();
@@ -112,6 +113,13 @@ const Home: FC = () => {
       setReducedVotes(reducedVotes);
     }
   }, [candidatesQuery.data]);
+
+  setInterval(() => {
+    setPolling(true);
+    hasVotedQuery.refetch();
+    candidatesQuery.refetch();
+    setPolling(false);
+  }, 5000);
 
   const handleVote = async () => {
     if (!selectedCandidate) return;
@@ -166,7 +174,7 @@ const Home: FC = () => {
   if (
     candidatesQuery.isLoading ||
     hasVotedQuery.isLoading ||
-    hasVotedQuery.isRefetching
+    (hasVotedQuery.isRefetching && polling)
   )
     return <Spin fullscreen size="large" />;
 

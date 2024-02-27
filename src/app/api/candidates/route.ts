@@ -25,7 +25,7 @@ export async function PUT(req: Request) {
   try {
     const exists = await db
       .collection(Collections.FINGERPRINTS)
-      .findOne({ fingerprint: dto.fingerprint });
+      .findOne({ $or: [{ fingerprint: dto.fingerprint }] });
 
     if (exists) {
       return new Response(JSON.stringify({ result: false }));

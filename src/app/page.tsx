@@ -162,7 +162,7 @@ const Home: FC = () => {
     return <Spin fullscreen size="large" />;
 
   return (
-    <main className="flex flex-col md:m-auto p-4 md:max-w-[800px]">
+    <main className="flex flex-col md:m-auto gap-4 p-4 md:max-w-[800px] h-full overflow-auto">
       {contextHolder}
       {!hasVotedQuery.data ? (
         <Participants
@@ -173,73 +173,86 @@ const Home: FC = () => {
           setIsModalOpen={setIsModalOpen}
         />
       ) : (
-        <div className="flex flex-col gap-4">
+        <div className="flex flex-col gap-4 flex-1">
           <h1 className=" text-sky-900 font-bold text-xl text-center">
             🇵🇦 Gracias por participar. Diga no al clientelismo.
           </h1>
           <div className="flex flex-col gap-2">
-            <p>Resultados de las elecciones simuladas:</p>
-            <ResponsiveContainer width="100%" height={400}>
-              <BarChart
-                data={
-                  candidatesQuery.data?.map((c) => ({
-                    name: c.name,
-                    votes: c.votes,
-                  })) || []
-                }
-                margin={{ left: -30 }} // Increase bottom margin
-              >
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis
-                  dataKey="name"
-                  angle={-90}
-                  textAnchor="end"
-                  height={175}
-                  tick={{ fontSize: 14 }}
-                />{" "}
-                <YAxis tick={{ fontSize: 12 }} />
-                <Tooltip content={<CustomTooltip />} />
-                <Bar dataKey="votes">
-                  {candidatesQuery.data?.map((c, index) => (
-                    <Cell key={index} fill={c.color} />
-                  )) || []}
-                </Bar>
-              </BarChart>
-            </ResponsiveContainer>
-            <p className=" text-xs text-center">
-              ¡Comparte la votacion con tus amigos para llegar a mas personas y
-              tener resultados más reales!
-            </p>
-            <div className="flex gap-2 justify-center">
-              <WhatsappShareButton
-                title={SHARE_TEXT}
-                url={window.location.href}
-              >
-                <WhatsappIcon size={32} round />
-              </WhatsappShareButton>
-              <FacebookShareButton
-                title={SHARE_TEXT}
-                url={window.location.href}
-              >
-                <FacebookIcon size={32} round />
-              </FacebookShareButton>
-              <TwitterShareButton title={SHARE_TEXT} url={window.location.href}>
-                <XIcon size={32} round />
-              </TwitterShareButton>
-              <RedditShareButton title={SHARE_TEXT} url={window.location.href}>
-                <RedditIcon size={32} round />
-              </RedditShareButton>
-              <TelegramShareButton
-                title={SHARE_TEXT}
-                url={window.location.href}
-              >
-                <TelegramIcon size={32} round />
-              </TelegramShareButton>
+            <div className="flex-1">
+              <p>Resultados de las elecciones simuladas:</p>
+              <ResponsiveContainer height={400}>
+                <BarChart
+                  data={
+                    candidatesQuery.data?.map((c) => ({
+                      name: c.name,
+                      votes: c.votes,
+                    })) || []
+                  }
+                  margin={{ left: -30, bottom: -40 }}
+                >
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis
+                    dataKey="name"
+                    angle={-90}
+                    textAnchor="end"
+                    height={175}
+                    tick={{ fontSize: 14 }}
+                  />{" "}
+                  <YAxis tick={{ fontSize: 12 }} />
+                  <Tooltip content={<CustomTooltip />} />
+                  <Bar dataKey="votes">
+                    {candidatesQuery.data?.map((c, index) => (
+                      <Cell key={index} fill={c.color} />
+                    )) || []}
+                  </Bar>
+                </BarChart>
+              </ResponsiveContainer>
+            </div>
+            <div className="flex-1">
+              <p className="text-center text-lg font-bold mb-2 text-gray-500">
+                ¡Ayudanos a llegar a mas personas! 🙂
+              </p>
+              <p className=" text-xs text-center mb-4 text-gray-500">
+                ¡Comparte la votacion con tus amigos para llegar a mas personas
+                y tener resultados más reales!
+              </p>
+              <div className="flex gap-2 justify-center">
+                <WhatsappShareButton
+                  title={SHARE_TEXT}
+                  url={window.location.href}
+                >
+                  <WhatsappIcon size={32} round />
+                </WhatsappShareButton>
+                <FacebookShareButton
+                  title={SHARE_TEXT}
+                  url={window.location.href}
+                >
+                  <FacebookIcon size={32} round />
+                </FacebookShareButton>
+                <TwitterShareButton
+                  title={SHARE_TEXT}
+                  url={window.location.href}
+                >
+                  <XIcon size={32} round />
+                </TwitterShareButton>
+                <RedditShareButton
+                  title={SHARE_TEXT}
+                  url={window.location.href}
+                >
+                  <RedditIcon size={32} round />
+                </RedditShareButton>
+                <TelegramShareButton
+                  title={SHARE_TEXT}
+                  url={window.location.href}
+                >
+                  <TelegramIcon size={32} round />
+                </TelegramShareButton>
+              </div>
             </div>
           </div>
         </div>
       )}
-      <div className="absolute bottom-0 left-0 right-0 flex text-center justify-center items-center gap-1 text-sm text-sky-900 mb-4">
+      <div className="flex text-center justify-center items-center gap-1 text-sm text-sky-900 mb-4">
         Developed by
         <a
           className="border px-2 py-1 rounded border-sky-900 hover:bg-sky-900 hover:text-white transition-all duration-300 ease-in-out"

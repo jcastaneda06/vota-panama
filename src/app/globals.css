@@ -9,6 +9,7 @@
 }
 
 body {
+  height: 100dvh;
   font-family: "Open Sauce Sans", sans-serif !important;
 }
 

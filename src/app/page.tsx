@@ -88,7 +88,6 @@ const Home: FC = () => {
   }, []);
   const fingerprintQuery = useQuery<number>({
     queryKey: ["fingerprint", fingerprint, ipAddress, location],
-    enabled: !!fingerprint && !!ipAddress && !!location,
     queryFn: async () => {
       if (fingerprint)
         return await getFingerprint({ fingerprint, ipAddress, location });

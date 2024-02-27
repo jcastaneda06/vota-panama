@@ -34,6 +34,7 @@ import {
 } from "react-share";
 import config from "@/config/config";
 import { Visitor } from "./types/Visitor";
+import { UserOutlined } from "@ant-design/icons";
 
 const VisitorApi = require("visitorapi");
 
@@ -63,6 +64,7 @@ const Home: FC = () => {
   const [messageApi, contextHolder] = message.useMessage();
   const [fingerprint, setFingerprint] = useState<number>(0);
   const [ipAddress, setIpAddress] = useState<string>("");
+  const [reducedVotes, setReducedVotes] = useState<number>(0);
 
   const { getCandidates, updateCandidate } = candidateEndpoints();
   const { getFingerprint } = fingerprintEndpoints();
@@ -100,6 +102,16 @@ const Home: FC = () => {
     mutationFn: async (payload: UpdateCandidateDto) =>
       await updateCandidate(payload),
   });
+
+  useEffect(() => {
+    if (candidatesQuery.data) {
+      const reducedVotes = candidatesQuery.data.reduce(
+        (acc, curr) => acc + curr.votes,
+        0
+      );
+      setReducedVotes(reducedVotes);
+    }
+  }, [candidatesQuery.data]);
 
   const handleVote = async () => {
     if (!selectedCandidate) return;
@@ -176,7 +188,9 @@ const Home: FC = () => {
           </h1>
           <div className="flex flex-col gap-2">
             <div className="flex-1">
-              <p>Resultados de las elecciones simuladas:</p>
+              <p className="text-gray-500">
+                Resultados de las elecciones simuladas:
+              </p>
               <ResponsiveContainer height={400}>
                 <BarChart
                   data={
@@ -204,6 +218,10 @@ const Home: FC = () => {
                   </Bar>
                 </BarChart>
               </ResponsiveContainer>
+            </div>
+            <div className="text-sky-900 flex text-center justify-center gap-2">
+              <UserOutlined />
+              {reducedVotes}
             </div>
             <div className="flex-1">
               <p className="text-center text-lg font-bold mb-2 text-gray-500">

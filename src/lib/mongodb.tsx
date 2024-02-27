@@ -17,7 +17,7 @@ if (!cached) {
 }
 
 export async function connectToDatabase(): Promise<ConnectType> {
-  const { serverUrl, dbName } = config;
+  const { serverUrl, dbName } = config();
   if (!serverUrl) {
     throw new Error(
       "Please define the MONGODB_URI environment variable inside .env.local"

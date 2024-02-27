@@ -3,4 +3,5 @@ export type Candidate = {
   name: string;
   votes: number;
   src: string;
+  color: string;
 };

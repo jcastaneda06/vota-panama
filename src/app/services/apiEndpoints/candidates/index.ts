@@ -14,16 +14,11 @@ export default function candidateEndpoints() {
     return response.json();
   };
 
-  const updateCandidate = async (candidate: UpdateCandidateDto) => {
-    const body = {
-      _id: candidate._id,
-      fingerprint: candidate.fingerprint,
-    };
-
+  const updateCandidate = async (dto: UpdateCandidateDto) => {
     const response = await fetch("/api/candidates", {
       headers: headers,
       method: "PUT",
-      body: JSON.stringify(body),
+      body: JSON.stringify(dto),
     });
 
     return response.json();

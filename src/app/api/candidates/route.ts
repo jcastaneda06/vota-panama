@@ -23,9 +23,9 @@ export async function PUT(req: Request) {
   const dto: UpdateCandidateDto = await req.json();
 
   try {
-    const exists = await db.collection(Collections.FINGERPRINTS).findOne({
-      $or: [{ fingerprint: dto.fingerprint }, { ipAddress: dto.ipAddress }],
-    });
+    const exists = await db
+      .collection(Collections.FINGERPRINTS)
+      .findOne({ fingerprint: dto.fingerprint });
 
     if (exists) {
       return new Response(JSON.stringify({ result: false }));
@@ -35,7 +35,6 @@ export async function PUT(req: Request) {
       .collection(Collections.FINGERPRINTS)
       .insertOne({
         fingerprint: dto.fingerprint,
-        ipAddress: dto.ipAddress,
       });
 
     const updateResult = await db

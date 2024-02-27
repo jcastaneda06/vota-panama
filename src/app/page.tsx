@@ -205,9 +205,9 @@ const Home: FC = () => {
                 />{" "}
                 <YAxis tick={{ fontSize: 12 }} />
                 <Tooltip content={<CustomTooltip />} />
-                <Bar dataKey="votes" fill="#8884d8">
-                  {candidatesQuery.data?.map((_, index) => (
-                    <Cell key={index} fill="#2AB3B0" />
+                <Bar dataKey="votes">
+                  {candidatesQuery.data?.map((c, index) => (
+                    <Cell key={index} fill={c.color} />
                   )) || []}
                 </Bar>
               </BarChart>

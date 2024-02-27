@@ -20,28 +20,31 @@ export async function PUT(req: Request) {
   }
 
   const { db } = await connectToDatabase();
-  const candidate: UpdateCandidateDto = await req.json();
+  const fingerprint: UpdateCandidateDto = await req.json();
 
   try {
-    const fingerPrint = await db
-      .collection(Collections.FINGERPRINTS)
-      .findOne({ fingerprint: candidate.fingerprint });
+    console.log(fingerprint);
+    const exists = await db.collection(Collections.FINGERPRINTS).findOne({
+      fingerprint,
+    });
 
-    if (fingerPrint) {
+    if (exists) {
       return new Response(JSON.stringify({ result: false }));
     }
 
     const addFingerprint = await db
       .collection(Collections.FINGERPRINTS)
       .insertOne({
-        fingerprint: candidate.fingerprint,
+        fingerprint: fingerprint.fingerprint,
+        ipAddress: fingerprint.ipAddress,
+        location: fingerprint.location,
       });
 
     const updateResult = await db
       .collection<Candidate>(Collections.CANDIDATES)
       .updateOne(
         // @ts-ignore
-        { _id: new ObjectId(candidate._id) },
+        { _id: new ObjectId(fingerprint._id) },
         { $inc: { votes: 1 } }
       );
 

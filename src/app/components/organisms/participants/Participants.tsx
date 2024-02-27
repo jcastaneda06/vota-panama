@@ -18,7 +18,7 @@ export const Participants: FC<ParticipantsProps> = (props) => {
   const { candidates, handleModal, handleVote, isModalOpen, setIsModalOpen } =
     props;
   return (
-    <div className="flex min-h-screen flex-col items-center gap-4 ">
+    <div className="flex  flex-col items-center gap-4 ">
       <h1 className=" text-sky-900 font-bold text-xl text-center">
         🇵🇦 Si las elecciones fueran hoy, ¿por quién votaría?
       </h1>
@@ -37,7 +37,7 @@ export const Participants: FC<ParticipantsProps> = (props) => {
         <div className="flex align-top justify-start gap-2">
           <OpenAIOutlined style={{ height: 16 }} />
           <div>
-            <p className="text-sm">
+            <p className="text-sm text-start">
               Votar por un candidato nuevo ofrece la posibilidad de innovación y
               cambio frente a la corrupción y los vicios del sistema
               establecido.

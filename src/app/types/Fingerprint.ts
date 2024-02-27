@@ -1,4 +1,6 @@
 export type Fingerprint = {
-  _id: string;
+  _id?: string;
   fingerprint: number;
+  cityLatLong: string;
+  ipAddress: string;
 };

@@ -32,6 +32,10 @@ import {
   TelegramShareButton,
   TelegramIcon,
 } from "react-share";
+import config from "@/config/config";
+import { Visitor } from "./types/Visitor";
+
+const VisitorApi = require("visitorapi");
 
 type TooltipPayload = {
   name: string; // Assuming this is the candidate's name
@@ -51,12 +55,16 @@ type CustomTooltipProps = {
 };
 
 const Home: FC = () => {
+  const { visitorApi } = config();
+
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   const [selectedCandidate, setSelectedCandidate] = useState<string | null>(
     null
   );
   const [messageApi, contextHolder] = message.useMessage();
   const [fingerprint, setFingerprint] = useState<number>(0);
+  const [location, setLocation] = useState<string>("");
+  const [ipAddress, setIpAddress] = useState<string>("");
 
   const { getCandidates, updateCandidate } = candidateEndpoints();
   const { getFingerprint } = fingerprintEndpoints();
@@ -72,19 +80,30 @@ const Home: FC = () => {
   useEffect(() => {
     const fingerprint = getBrowserFingerprint();
     setFingerprint(fingerprint);
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  useEffect(() => {
+    VisitorApi(visitorApi, (data: Visitor) => {
+      setLocation(data.cityLatLong);
+      setIpAddress(data.ipAddress);
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
   const fingerprintQuery = useQuery<number>({
-    queryKey: ["fingerprint", fingerprint],
+    queryKey: ["fingerprint", fingerprint, ipAddress, location],
     enabled: !!fingerprint,
     queryFn: async () => {
-      if (fingerprint) return await getFingerprint(fingerprint);
+      if (fingerprint)
+        return await getFingerprint({ fingerprint, ipAddress, location });
     },
   });
 
   const candidatesQuery = useQuery<Candidate[]>({
     queryKey: ["candidates"],
     queryFn: async () => getCandidates(),
+    refetchOnWindowFocus: false,
   });
 
   const candidatesMutation = useMutation({
@@ -98,6 +117,8 @@ const Home: FC = () => {
     const payload = {
       _id: selectedCandidate,
       fingerprint: fingerprint,
+      location: location,
+      ipAddress: ipAddress,
     } satisfies UpdateCandidateDto;
 
     const response: MongoUpdateOneResponse =
@@ -110,6 +131,7 @@ const Home: FC = () => {
         duration: 2.5,
       });
       setIsModalOpen(false);
+      fingerprintQuery.refetch();
     } else {
       messageApi.open({
         type: "error",
@@ -138,11 +160,15 @@ const Home: FC = () => {
     return null;
   };
 
-  if (candidatesQuery.isLoading || fingerprintQuery.isLoading)
+  if (
+    candidatesQuery.isLoading ||
+    fingerprintQuery.isLoading ||
+    fingerprintQuery.isRefetching
+  )
     return <Spin fullscreen size="large" />;
 
   return (
-    <main className="flex md:m-auto p-4 md:max-w-[800px] md:justify-center">
+    <main className="flex flex-col md:m-auto p-4 md:max-w-[800px]">
       {contextHolder}
       {!fingerprintQuery.data ? (
         <Participants
@@ -219,6 +245,9 @@ const Home: FC = () => {
           </div>
         </div>
       )}
+      <div className="absolute bottom-0 left-0 right-0 flex text-center justify-center text-sm text-sky-900 mb-4">
+        Developed by Jesus Castaneda
+      </div>
     </main>
   );
 };

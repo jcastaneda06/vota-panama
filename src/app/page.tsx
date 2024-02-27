@@ -114,12 +114,12 @@ const Home: FC = () => {
     }
   }, [candidatesQuery.data]);
 
-  setInterval(() => {
-    setPolling(true);
-    hasVotedQuery.refetch();
-    candidatesQuery.refetch();
-    setPolling(false);
-  }, 5000);
+  // setInterval(() => {
+  //   setPolling(true);
+  //   hasVotedQuery.refetch();
+  //   candidatesQuery.refetch();
+  //   setPolling(false);
+  // }, 5000);
 
   const handleVote = async () => {
     if (!selectedCandidate) return;

@@ -86,7 +86,7 @@ const Home: FC = () => {
   const hasVotedQuery = useQuery<number>({
     queryKey: ["hasVoted", fingerprint, ipAddress],
     queryFn: async () => {
-      if (fingerprint) return await getFingerprint({ fingerprint, ipAddress });
+      if (fingerprint) return await getFingerprint({ fingerprint });
     },
   });
 
@@ -107,7 +107,6 @@ const Home: FC = () => {
     const payload = {
       candidateId: selectedCandidate,
       fingerprint: fingerprint,
-      ipAddress: ipAddress,
     } satisfies UpdateCandidateDto;
 
     const response: MongoUpdateOneResponse =
@@ -155,8 +154,7 @@ const Home: FC = () => {
   if (
     candidatesQuery.isLoading ||
     hasVotedQuery.isLoading ||
-    hasVotedQuery.isRefetching ||
-    ipAddress === ""
+    hasVotedQuery.isRefetching
   )
     return <Spin fullscreen size="large" />;
 

@@ -38,10 +38,9 @@ import { Visitor } from "./types/Visitor";
 const VisitorApi = require("visitorapi");
 
 type TooltipPayload = {
-  name: string; // Assuming this is the candidate's name
-  value: number; // Assuming this represents the number of votes
+  name: string;
+  value: number;
   payload: {
-    // You can include more specific data here if needed
     name: string;
     votes: number;
   };

@@ -85,7 +85,7 @@ const Home: FC = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   const hasVotedQuery = useQuery<number>({
-    queryKey: ["hasVoted", fingerprint, ipAddress, location],
+    queryKey: ["hasVoted", fingerprint, ipAddress],
     queryFn: async () => {
       if (fingerprint) return await getFingerprint({ fingerprint, ipAddress });
     },

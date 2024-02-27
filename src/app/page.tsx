@@ -63,7 +63,6 @@ const Home: FC = () => {
   );
   const [messageApi, contextHolder] = message.useMessage();
   const [fingerprint, setFingerprint] = useState<number>(0);
-  const [location, setLocation] = useState<string>("");
   const [ipAddress, setIpAddress] = useState<string>("");
 
   const { getCandidates, updateCandidate } = candidateEndpoints();
@@ -81,16 +80,14 @@ const Home: FC = () => {
 
   useEffect(() => {
     VisitorApi(visitorApi, (data: Visitor) => {
-      setLocation(data.cityLatLong);
       setIpAddress(data.ipAddress);
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-  const fingerprintQuery = useQuery<number>({
-    queryKey: ["fingerprint", fingerprint, ipAddress, location],
+  const hasVotedQuery = useQuery<number>({
+    queryKey: ["hasVoted", fingerprint, ipAddress, location],
     queryFn: async () => {
-      if (fingerprint)
-        return await getFingerprint({ fingerprint, ipAddress, location });
+      if (fingerprint) return await getFingerprint({ fingerprint, ipAddress });
     },
   });
 
@@ -111,7 +108,6 @@ const Home: FC = () => {
     const payload = {
       candidateId: selectedCandidate,
       fingerprint: fingerprint,
-      location: location,
       ipAddress: ipAddress,
     } satisfies UpdateCandidateDto;
 
@@ -126,7 +122,8 @@ const Home: FC = () => {
           duration: 2.5,
         })
         .then(() => {
-          fingerprintQuery.refetch();
+          hasVotedQuery.refetch();
+          candidatesQuery.refetch();
         });
     } else {
       messageApi.open({
@@ -158,15 +155,16 @@ const Home: FC = () => {
 
   if (
     candidatesQuery.isLoading ||
-    fingerprintQuery.isLoading ||
-    fingerprintQuery.isRefetching
+    hasVotedQuery.isLoading ||
+    hasVotedQuery.isRefetching ||
+    ipAddress === ""
   )
     return <Spin fullscreen size="large" />;
 
   return (
     <main className="flex flex-col md:m-auto p-4 md:max-w-[800px]">
       {contextHolder}
-      {!fingerprintQuery.data ? (
+      {!hasVotedQuery.data ? (
         <Participants
           candidates={candidatesQuery.data || []}
           setSelectedCandidate={setSelectedCandidate}

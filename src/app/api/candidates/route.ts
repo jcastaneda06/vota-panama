@@ -23,9 +23,12 @@ export async function PUT(req: Request) {
   const fingerprint: UpdateCandidateDto = await req.json();
 
   try {
-    console.log(fingerprint);
     const exists = await db.collection(Collections.FINGERPRINTS).findOne({
-      fingerprint,
+      $or: [
+        { fingerprint: fingerprint.fingerprint },
+        { ipAddress: fingerprint.ipAddress },
+        { location: fingerprint.location },
+      ],
     });
 
     if (exists) {
@@ -44,7 +47,7 @@ export async function PUT(req: Request) {
       .collection<Candidate>(Collections.CANDIDATES)
       .updateOne(
         // @ts-ignore
-        { _id: new ObjectId(fingerprint._id) },
+        { _id: new ObjectId(fingerprint.candidateId) },
         { $inc: { votes: 1 } }
       );
 

@@ -72,11 +72,6 @@ const Home: FC = () => {
   const SHARE_TEXT =
     "Participa en la simulación de votacion de candidatos presidenciales 2024 🇵🇦";
 
-  const handleModal = (id: string) => {
-    setSelectedCandidate(id);
-    setIsModalOpen(true);
-  };
-
   useEffect(() => {
     const fingerprint = getBrowserFingerprint();
     setFingerprint(fingerprint);
@@ -93,7 +88,7 @@ const Home: FC = () => {
   }, []);
   const fingerprintQuery = useQuery<number>({
     queryKey: ["fingerprint", fingerprint, ipAddress, location],
-    enabled: !!fingerprint,
+    enabled: !!fingerprint && !!ipAddress && !!location,
     queryFn: async () => {
       if (fingerprint)
         return await getFingerprint({ fingerprint, ipAddress, location });
@@ -115,7 +110,7 @@ const Home: FC = () => {
     if (!selectedCandidate) return;
 
     const payload = {
-      _id: selectedCandidate,
+      candidateId: selectedCandidate,
       fingerprint: fingerprint,
       location: location,
       ipAddress: ipAddress,
@@ -125,13 +120,16 @@ const Home: FC = () => {
       await candidatesMutation.mutateAsync(payload);
 
     if (response.result) {
-      messageApi.open({
-        type: "success",
-        content: "Voto registrado exitosamente",
-        duration: 2.5,
-      });
+      messageApi
+        .open({
+          type: "success",
+          content: "Voto registrado exitosamente",
+          duration: 2.5,
+        })
+        .then(() => {
+          fingerprintQuery.refetch();
+        });
       setIsModalOpen(false);
-      fingerprintQuery.refetch();
     } else {
       messageApi.open({
         type: "error",
@@ -173,7 +171,7 @@ const Home: FC = () => {
       {!fingerprintQuery.data ? (
         <Participants
           candidates={candidatesQuery.data || []}
-          handleModal={handleModal}
+          setSelectedCandidate={setSelectedCandidate}
           handleVote={handleVote}
           isModalOpen={isModalOpen}
           setIsModalOpen={setIsModalOpen}

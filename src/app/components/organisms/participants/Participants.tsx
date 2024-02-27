@@ -48,7 +48,7 @@ export const Participants: FC<ParticipantsProps> = (props) => {
       <Modal
         title={
           <div>
-            <ExclamationCircleOutlined /> Confirmacion
+            <ExclamationCircleOutlined /> Confirmación
           </div>
         }
         open={isModalOpen}
@@ -59,7 +59,7 @@ export const Participants: FC<ParticipantsProps> = (props) => {
         cancelText="Cancelar"
       >
         <p>
-          Al votar por un candidato no podra volver a relaizar su voto. ¿Está
+          Al votar por un candidato no podrá volver a realizar su voto. ¿Está
           seguro de que quiere continuar?
         </p>
       </Modal>

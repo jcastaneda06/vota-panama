@@ -245,8 +245,17 @@ const Home: FC = () => {
           </div>
         </div>
       )}
-      <div className="absolute bottom-0 left-0 right-0 flex text-center justify-center text-sm text-sky-900 mb-4">
-        Developed by Jesus Castaneda
+      <div className="absolute bottom-0 left-0 right-0 flex text-center justify-center items-center gap-1 text-sm text-sky-900 mb-4">
+        Developed by
+        <a
+          className="border px-2 py-1 rounded border-sky-900 hover:bg-sky-900 hover:text-white transition-all duration-300 ease-in-out"
+          href="https://www.instagram.com/gsus6_/"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          {" "}
+          @gsus6_
+        </a>
       </div>
     </main>
   );

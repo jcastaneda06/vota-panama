@@ -1,5 +1,5 @@
 export type UpdateCandidateDto = {
-  _id?: string;
+  candidateId?: string;
   fingerprint: number;
   ipAddress: string;
   location: string;

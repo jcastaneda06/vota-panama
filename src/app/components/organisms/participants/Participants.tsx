@@ -6,17 +6,27 @@ import { ExclamationCircleOutlined, OpenAIOutlined } from "@ant-design/icons";
 
 type ParticipantsProps = {
   candidates: Candidate[];
-  // eslint-disable-next-line no-unused-vars
-  handleModal: (id: string) => void;
   handleVote: () => void;
   isModalOpen: boolean;
   // eslint-disable-next-line no-unused-vars
   setIsModalOpen: (value: boolean) => void;
+  setSelectedCandidate: (value: string | null) => void;
 };
 
 export const Participants: FC<ParticipantsProps> = (props) => {
-  const { candidates, handleModal, handleVote, isModalOpen, setIsModalOpen } =
-    props;
+  const {
+    candidates,
+    handleVote,
+    isModalOpen,
+    setIsModalOpen,
+    setSelectedCandidate,
+  } = props;
+
+  const handleModal = (candidateId: string) => {
+    setSelectedCandidate(candidateId);
+    setIsModalOpen(true);
+  };
+
   return (
     <div className="flex  flex-col items-center gap-4 ">
       <h1 className=" text-sky-900 font-bold text-xl text-center">

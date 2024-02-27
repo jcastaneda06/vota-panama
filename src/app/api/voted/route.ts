@@ -17,11 +17,7 @@ export async function POST(req: Request) {
   const response = await db
     .collection<Fingerprint>(Collections.FINGERPRINTS)
     .findOne<Fingerprint>({
-      $or: [
-        { fingerprint: dto.fingerprint },
-        { ipAddress: dto.ipAddress },
-        { location: dto.location },
-      ],
+      $or: [{ fingerprint: dto.fingerprint }, { ipAddress: dto.ipAddress }],
     });
 
   if (response) return new Response(JSON.stringify(true));

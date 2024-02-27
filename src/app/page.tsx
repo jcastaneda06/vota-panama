@@ -128,15 +128,14 @@ const Home: FC = () => {
         .then(() => {
           fingerprintQuery.refetch();
         });
-      setIsModalOpen(false);
     } else {
       messageApi.open({
         type: "error",
         content: "Usted ya ha votado",
         duration: 2.5,
       });
-      setIsModalOpen(false);
     }
+    setIsModalOpen(false);
   };
 
   const CustomTooltip: FC<CustomTooltipProps> = ({

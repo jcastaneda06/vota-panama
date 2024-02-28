@@ -91,12 +91,15 @@ const Home: FC = () => {
     queryFn: async () => {
       if (fingerprint) return await getFingerprint({ fingerprint });
     },
+    refetchOnWindowFocus: false,
+    refetchInterval: 5000,
   });
 
   const candidatesQuery = useQuery<Candidate[]>({
     queryKey: ["candidates"],
     queryFn: async () => getCandidates(),
     refetchOnWindowFocus: false,
+    refetchInterval: 5000,
   });
 
   const candidatesMutation = useMutation({
@@ -113,13 +116,6 @@ const Home: FC = () => {
       setReducedVotes(reducedVotes);
     }
   }, [candidatesQuery.data]);
-
-  // setInterval(() => {
-  //   setPolling(true);
-  //   hasVotedQuery.refetch();
-  //   candidatesQuery.refetch();
-  //   setPolling(false);
-  // }, 5000);
 
   const handleVote = async () => {
     if (!selectedCandidate) return;
@@ -227,7 +223,7 @@ const Home: FC = () => {
                 </BarChart>
               </ResponsiveContainer>
             </div>
-            <div className="text-sky-900 flex text-center justify-center gap-2">
+            <div className="text-sky-900 flex text-center justify-center gap-2 animate-pulse">
               <UserOutlined />
               {reducedVotes}
             </div>

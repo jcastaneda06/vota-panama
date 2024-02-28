@@ -35,6 +35,7 @@ import {
 import config from "@/config/config";
 import { Visitor } from "./types/Visitor";
 import { UserOutlined } from "@ant-design/icons";
+import { useRouter } from "next/navigation";
 
 const VisitorApi = require("visitorapi");
 
@@ -56,7 +57,6 @@ type CustomTooltipProps = {
 
 const Home: FC = () => {
   const { visitorApi } = config();
-
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   const [selectedCandidate, setSelectedCandidate] = useState<string | null>(
     null
@@ -65,7 +65,12 @@ const Home: FC = () => {
   const [fingerprint, setFingerprint] = useState<number>(0);
   const [ipAddress, setIpAddress] = useState<string>("");
   const [reducedVotes, setReducedVotes] = useState<number>(0);
-  const [polling, setPolling] = useState<boolean>(false);
+  const { outOfService } = config();
+  const router = useRouter();
+
+  if (outOfService) {
+    router.push("/out-of-service");
+  }
 
   const { getCandidates, updateCandidate } = candidateEndpoints();
   const { getFingerprint } = fingerprintEndpoints();
@@ -170,7 +175,7 @@ const Home: FC = () => {
   if (
     candidatesQuery.isLoading ||
     hasVotedQuery.isLoading ||
-    (hasVotedQuery.isRefetching && polling)
+    hasVotedQuery.isRefetching
   )
     return <Spin fullscreen size="large" />;
 

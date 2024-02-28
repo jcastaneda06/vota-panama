@@ -36,6 +36,7 @@ import config from "@/config/config";
 import { Visitor } from "./types/Visitor";
 import { UserOutlined } from "@ant-design/icons";
 import { useRouter } from "next/navigation";
+import statusEndpoints from "./services/apiEndpoints/status";
 
 const VisitorApi = require("visitorapi");
 
@@ -65,15 +66,23 @@ const Home: FC = () => {
   const [fingerprint, setFingerprint] = useState<number>(0);
   const [ipAddress, setIpAddress] = useState<string>("");
   const [reducedVotes, setReducedVotes] = useState<number>(0);
-  const { outOfService } = config();
   const router = useRouter();
-
-  if (outOfService) {
-    router.push("/out-of-service");
-  }
 
   const { getCandidates, updateCandidate } = candidateEndpoints();
   const { getFingerprint } = fingerprintEndpoints();
+  const { getServerStatus } = statusEndpoints();
+
+  const serverStatusQuery = useQuery<boolean>({
+    queryKey: ["serverStatus"],
+    queryFn: async () => {
+      return await getServerStatus();
+    },
+    refetchOnWindowFocus: false,
+  });
+
+  if (serverStatusQuery.data) {
+    router.push("/out-of-service");
+  }
 
   const SHARE_TEXT =
     "Participa en la simulación de votacion de candidatos presidenciales 2024 🇵🇦";
@@ -91,6 +100,7 @@ const Home: FC = () => {
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
   const hasVotedQuery = useQuery<number>({
     queryKey: ["hasVoted", fingerprint, ipAddress],
     queryFn: async () => {
